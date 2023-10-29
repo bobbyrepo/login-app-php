@@ -6,9 +6,9 @@ header("Access-Control-Allow-Methods: PUT");
 header("Access-Control-Allow-Headers: Content-Type, X-Requested-With");
 
 require '../vendor/autoload.php';
-use Dotenv\Dotenv;
+use Dotenv\Dotenv as Dotenv;
 
-$dotenv = Dotenv::createImmutable(__DIR__);
+$dotenv = Dotenv::createUnsafeImmutable(__DIR__ .'/../');
 $dotenv->load();
 
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -20,15 +20,15 @@ $dotenv->load();
     if (empty($username) || empty($email) || empty($password)) {
         echo "Please fill in all the fields.";
     } else {
-            // Access the environment variables
-            $dbHost = $_ENV['DB_HOST'];
-            $dbUsername = $_ENV['DB_USERNAME'];
-            $dbPassword = $_ENV['DB_PASSWORD'];
-            $dbName = $_ENV['DB_NAME'];
+            // Connect to your MySQL database
+            // $host = $_ENV["DB_HOST"];
+            $host = $_ENV["DB_HOST"];
+            $name = $_ENV["DB_USERNAME"];
+            $pass = $_ENV["DB_PASSWORD"];
+            $database = $_ENV["DB_NAME"];
 
-            // Use the variables in your database connection code
-            $connect = new mysqli($dbHost, $dbUsername, $dbPassword, $dbName);
-            
+            $connect = new mysqli($host, $name, $pass, $database);
+
             if ($connect->connect_error) {
                 die("Connection failed: " . $connect->connect_error);
             } else {
@@ -102,10 +102,11 @@ $dotenv->load();
     $updatedUsername = $data['username']; // Corrected variable name
 
     // Connect to your MySQL database
-    $host = "localhost";
-    $name = "root";
-    $pass = "";
-    $database = "guvi"; 
+    $host = $_ENV["DB_HOST"];
+    $name = $_ENV["DB_USERNAME"];
+    $pass = $_ENV["DB_PASSWORD"];
+    $database = $_ENV["DB_NAME"];
+
  
     $connect = new mysqli($host, $name, $pass, $database);
 
