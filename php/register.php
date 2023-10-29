@@ -5,6 +5,12 @@ header("Access-Control-Allow-Methods: POST");
 header("Access-Control-Allow-Methods: PUT");
 header("Access-Control-Allow-Headers: Content-Type, X-Requested-With");
 
+require '../vendor/autoload.php';
+use Dotenv\Dotenv;
+
+$dotenv = Dotenv::createImmutable(__DIR__);
+$dotenv->load();
+
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $username = $_POST['username'];
         $email = $_POST['email'];
@@ -14,19 +20,38 @@ header("Access-Control-Allow-Headers: Content-Type, X-Requested-With");
     if (empty($username) || empty($email) || empty($password)) {
         echo "Please fill in all the fields.";
     } else {
-        // Connect to your MySQL database
-        $host = "localhost";
-        $name = "root";
-        $pass = "";
-        $database = "guvi"; 
+            // Access the environment variables
+            $dbHost = $_ENV['DB_HOST'];
+            $dbUsername = $_ENV['DB_USERNAME'];
+            $dbPassword = $_ENV['DB_PASSWORD'];
+            $dbName = $_ENV['DB_NAME'];
 
-        $connect = new mysqli($host, $name, $pass, $database);
+            // Use the variables in your database connection code
+            $connect = new mysqli($dbHost, $dbUsername, $dbPassword, $dbName);
+            
+            if ($connect->connect_error) {
+                die("Connection failed: " . $connect->connect_error);
+            } else {
+                // Check if the user with the specified ID exists in MySQL
+                $checkTable = "SHOW TABLES LIKE 'registeration'";
+                $tableCheckResult = $connect->query($checkTable);
 
-        if ($connect -> connect_error) {
-            die("Connection failed: " . $connect -> connect_error);
-        } else {
+                if ($tableCheckResult->num_rows == 0) {
+                    // The 'registeration' table does not exist; create it
+                    $createTableSQL = "CREATE TABLE registeration (
+                        id INT AUTO_INCREMENT PRIMARY KEY,
+                        username VARCHAR(255) NOT NULL,
+                        email VARCHAR(255) NOT NULL,
+                        password VARCHAR(255) NOT NULL
+                        )";
 
-           // Check if the email already exists
+                    if ($connect->query($createTableSQL)) {
+                        echo "The 'registeration' table has been created.";
+                    } else {
+                        echo "Failed to create the 'registeration' table: " . $connect->error;
+                    }
+                } 
+                    // Check if the email already exists
            $checkEmail = "SELECT * FROM registeration WHERE email = ?";
            $stmt = $connect->prepare($checkEmail);
            $stmt->bind_param("s", $email);
@@ -66,6 +91,7 @@ header("Access-Control-Allow-Headers: Content-Type, X-Requested-With");
             $stmt->close();
             $connect->close();
         }
+
     }
 } else if ($_SERVER["REQUEST_METHOD"] == "PUT") {
     // Retrieve the request body data
@@ -73,7 +99,7 @@ header("Access-Control-Allow-Headers: Content-Type, X-Requested-With");
     $data = json_decode($putData, true);
  
     $id = intval($data['id']);
-    $updatedUsername = $data['username'];
+    $updatedUsername = $data['username']; // Corrected variable name
 
     // Connect to your MySQL database
     $host = "localhost";
