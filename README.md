@@ -12,7 +12,7 @@ The project follows the following user flow:
 
 2. **Login**: Registered users can log in with their credentials to access their profiles.
 
-3. **Profile**: Upon successful login, users are redirected to the profile page, where they can view and update additional information,including username, including age, date of birth (DOB), and contact details.
+3. **Profile**: Upon successful login, users are redirected to the profile page, where they can view and update additional information, including username, including age, date of birth (DOB), and contact details.
 
 
 ## Tech Stack
