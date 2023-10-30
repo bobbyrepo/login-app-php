@@ -51,5 +51,3 @@ To use the login-app-php application:
 
 5. Open your browser and visit `http://127.0.0.1:5500/index.html` to access the application.
 
-Follow the points mentioned in the assignment instructions to ensure proper implementation.
-
